@@ -4,7 +4,7 @@ import throttle from 'lodash.throttle'
 import { INTERVAL_DURATION } from './constants'
 
 export default function App() {
-  const [point, setPoint] = React.useState<number[]>()
+  const [point, setPoint] = React.useState<[number, number]>()
   const [duration, setDuration] = React.useState<number>(INTERVAL_DURATION)
 
   const onPointerMove = React.useCallback(

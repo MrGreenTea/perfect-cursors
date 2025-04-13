@@ -2,11 +2,11 @@ import { PerfectCursor } from 'perfect-cursors'
 import * as React from 'react'
 import { usePerfectCursor } from '../hooks/usePerfectCursors'
 
-export function Cursor({ point, maxInterval }: { point: number[]; maxInterval: number }) {
+export function Cursor({ point, maxInterval }: { point: [number, number]; maxInterval: number }) {
   const rCursor = React.useRef<SVGSVGElement>(null)
 
   // 1. perfect-cursors
-  const animateCursor = React.useCallback((point: number[]) => {
+  const animateCursor = React.useCallback((point: [number, number]) => {
     const elm = rCursor.current
     if (!elm) return
     elm.style.setProperty('transform', `translate(${point[0]}px, ${point[1]}px)`)
@@ -23,7 +23,7 @@ export function Cursor({ point, maxInterval }: { point: number[]; maxInterval: n
     PerfectCursor.MAX_INTERVAL = maxInterval
   }, [maxInterval])
 
-  const onPointChange = React.useCallback((point: number[]) => pc.addPoint(point), [pc])
+  const onPointChange = React.useCallback((point: [number, number]) => pc.addPoint(point), [pc])
 
   React.useLayoutEffect(() => onPointChange(point), [onPointChange, point])
 
@@ -38,8 +38,8 @@ export function Cursor({ point, maxInterval }: { point: number[]; maxInterval: n
 
   // 3. Animating between points
   // const rTimeout = React.useRef<any>()
-  // const rPrevPoint = React.useRef<number[]>(point)
-  // const rNextPoint = React.useRef<number[]>(point)
+  // const rPrevPoint = React.useRef<[number, number]>(point)
+  // const rNextPoint = React.useRef<[number, number]>(point)
   // const rPrevStart = React.useRef<number>(performance.now())
   // const rNextStart = React.useRef<number>(performance.now())
   // const rDuration = React.useRef<number>(0)

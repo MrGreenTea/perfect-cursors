@@ -73,7 +73,7 @@ import { PerfectCursor } from 'perfect-cursors'
 
 const elm = document.getElementById('cursor')
 
-function updateMyCursor(point: number[]) {
+function updateMyCursor(point: [number, number]) {
   elm.style.setProperty('transform', `translate(${point[0]}px, ${point[1]}px)`)
 }
 
@@ -103,7 +103,7 @@ To use the library in React, create a React hook called `usePerfectCursor`.
 
 import { PerfectCursor } from 'perfect-cursors'
 
-export function usePerfectCursor(cb: (point: number[]) => void, point?: number[]) {
+export function usePerfectCursor(cb: (point: [number, number]) => void, point?: [number, number]) {
   const [pc] = React.useState(() => new PerfectCursor(cb))
 
   React.useLayoutEffect(() => {
@@ -112,7 +112,7 @@ export function usePerfectCursor(cb: (point: number[]) => void, point?: number[]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pc])
 
-  const onPointChange = React.useCallback((point: number[]) => pc.addPoint(point), [pc])
+  const onPointChange = React.useCallback((point: [number, number]) => pc.addPoint(point), [pc])
 
   return onPointChange
 }
@@ -126,10 +126,10 @@ And then a Cursor component that looks something like this:
 import * as React from 'react'
 import { usePerfectCursor } from '../hooks/usePerfectCursors'
 
-export function Cursor({ point }: { point: number[] }) {
+export function Cursor({ point }: { point: [number, number] }) {
   const rCursor = React.useRef<SVGSVGElement>(null)
 
-  const animateCursor = React.useCallback((point: number[]) => {
+  const animateCursor = React.useCallback((point: [number, number]) => {
     const elm = rCursor.current
     if (!elm) return
     elm.style.setProperty('transform', `translate(${point[0]}px, ${point[1]}px)`)
