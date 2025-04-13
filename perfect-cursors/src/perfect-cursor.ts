@@ -1,11 +1,11 @@
-import { Vec } from '@tldraw/vec'
+import { dist, type Point2D } from './point'
 import { Spline } from './spline'
 
 type AnimationState = 'stopped' | 'idle' | 'animating'
 
 type Animation = {
-  from: number[]
-  to: number[]
+  from: Point2D
+  to: Point2D
   start: number
   duration: number
 }
@@ -15,17 +15,17 @@ export class PerfectCursor {
   queue: Animation[] = []
   timestamp = performance.now()
   lastRequestId = 0
-  timeoutId: any = 0
-  prevPoint?: number[]
+  timeoutId: ReturnType<typeof setTimeout> | null = null
+  prevPoint?: Point2D
   spline = new Spline()
-  cb: (point: number[]) => void
+  cb: (point: Point2D) => void
 
-  constructor(cb: (point: number[]) => void) {
+  constructor(cb: (point: Point2D) => void) {
     this.cb = cb
   }
 
-  addPoint = (point: number[]) => {
-    clearTimeout(this.timeoutId)
+  addPoint = (point: Point2D) => {
+    if (this.timeoutId) clearTimeout(this.timeoutId)
     const now = performance.now()
     const duration = Math.min(now - this.timestamp, PerfectCursor.MAX_INTERVAL)
     if (!this.prevPoint) {
@@ -37,7 +37,7 @@ export class PerfectCursor {
       return
     }
     if (this.state === 'stopped') {
-      if (Vec.dist(this.prevPoint, point) < 4) {
+      if (dist(this.prevPoint, point) < 4) {
         this.cb(point)
         return
       }
@@ -106,6 +106,6 @@ export class PerfectCursor {
   static MAX_INTERVAL = 300
 
   dispose = () => {
-    clearTimeout(this.timeoutId)
+    if (this.timeoutId) clearTimeout(this.timeoutId)
   }
 }

@@ -1,23 +1,23 @@
-import { Vec } from '@tldraw/vec'
+import { dist, type Point2D } from './point'
 
 export class Spline {
-  points: number[][] = []
+  points: Point2D[] = []
 
   lengths: number[] = []
 
   totalLength = 0
 
-  private prev?: number[]
+  private prev?: Point2D
 
-  constructor(points: number[][] = []) {
+  constructor(points: Point2D[] = []) {
     this.points = points
-    this.lengths = points.map((point, i, arr) => (i === 0 ? 0 : Vec.dist(point, arr[i - 1])))
+    this.lengths = points.map((point, i, arr) => (i === 0 ? 0 : dist(point, arr[i - 1])))
     this.totalLength = this.lengths.reduce((acc, cur) => acc + cur, 0)
   }
 
-  addPoint = (point: number[]) => {
+  addPoint = (point: Point2D) => {
     if (this.prev) {
-      const length = Vec.dist(this.prev, point)
+      const length = dist(this.prev, point)
       this.lengths.push(length)
       this.totalLength += length
       this.points.push(point)
@@ -30,7 +30,7 @@ export class Spline {
     this.totalLength = 0
   }
 
-  getSplinePoint = (rt: number): number[] => {
+  getSplinePoint = (rt: number): Point2D => {
     const { points } = this
     const l = points.length - 1,
       d = Math.trunc(rt),
@@ -45,9 +45,13 @@ export class Spline {
       q2 = 3 * ttt - 5 * tt + 2,
       q3 = -3 * ttt + 4 * tt + t,
       q4 = ttt - tt
+    const [p0x, p0y] = points[p0],
+      [p1x, p1y] = points[p1],
+      [p2x, p2y] = points[p2],
+      [p3x, p3y] = points[p3]
     return [
-      (points[p0][0] * q1 + points[p1][0] * q2 + points[p2][0] * q3 + points[p3][0] * q4) / 2,
-      (points[p0][1] * q1 + points[p1][1] * q2 + points[p2][1] * q3 + points[p3][1] * q4) / 2,
+      (p0x * q1 + p1x * q2 + p2x * q3 + p3x * q4) / 2,
+      (p0y * q1 + p1y * q2 + p2y * q3 + p3y * q4) / 2,
     ]
   }
 }
